@@ -32,20 +32,20 @@ from tinydb import Query
 
 
 
-@click.group()
-def bean_import_exchange():
-        pass
-
-
-# @bean_import_exchange.command()
-# @click.option("-x", "--exchange", prompt="Exchange", help="FTXUS, BITSTAMP, KRAKEN")
-# def bean_import(exchange, spot, price, qty, buy, sell, date, comment, buy_price, buy_date):
-#       beancount.bean_count_transaction(
-#               exchange, spot, price, qty, buy, sell, date, comment, buy_price, buy_date)
-
 # @click.group()
-# def bean_transaction():
+# def bean_import_exchange():
 #       pass
+
+
+# # @bean_import_exchange.command()
+# # @click.option("-x", "--exchange", prompt="Exchange", help="FTXUS, BITSTAMP, KRAKEN")
+# # def bean_import(exchange, spot, price, qty, buy, sell, date, comment, buy_price, buy_date):
+# #         beancount.bean_count_transaction(
+# #                 exchange, spot, price, qty, buy, sell, date, comment, buy_price, buy_date)
+
+@click.group()
+def bean_transaction():
+        pass
 
 
 @bean_transaction.command()

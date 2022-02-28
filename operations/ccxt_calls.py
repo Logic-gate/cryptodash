@@ -20,6 +20,8 @@ from helpers import Notification
 from helpers import parse_date_time 
 from helpers import raise_error
 
+from helpers import df_to_table
+
 
 def fetch(exchange, spot, option, plot, seconds, pretty, bean, notify, match):
         """fetch: Api call to return self.init_ccxt().fetch_ticker(spot)
@@ -32,7 +34,6 @@ def fetch(exchange, spot, option, plot, seconds, pretty, bean, notify, match):
         parse_date = dateutil.parser.isoparse(str(result['datetime']))
         date = datetime.datetime.strftime(parse_date, '%Y-%m-%d')
         time = datetime.datetime.strftime(parse_date, '%H:%M:%S')
-        pd.set_option("max_rows", None)
         if option == 'all':
                 table = Table(title=spot)
                 table.add_column("symbol", justify="center",
@@ -307,6 +308,10 @@ def fetch_balance(exchange):
                         dataframe = pd.DataFrame(result)
                         dataframe['usdValue'] = dataframe['usdValue'].astype(float)
                         total = dataframe.loc[:, 'usdValue'].sum()
+                        table = Table(title="Trades")
+                        # param = {'justify': 'center', 'style': COLORS['blue']}
+                        # test_table(table, result, justify='center', style=COLORS['blue'])
+                        df_to_table(dataframe, table, justify="center", style=COLORS['green'])
                 elif exchange == 'bitstamp':
                         result = ccxt_api.balance()['info']
                         dataframe = pd.DataFrame([result], columns=['Param', 'Amount'])
@@ -315,9 +320,9 @@ def fetch_balance(exchange):
                 pass
 
         console = Console()
-        pd.set_option("max_rows", None)
-        console.print(dataframe)
-
+        # pd.set_option("max_rows", None)
+        # console.print(dataframe)
+        console.print(table)
         print(f"TOTAL: ${round(total, 3)}")
 
 
