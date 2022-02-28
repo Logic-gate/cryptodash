@@ -379,8 +379,7 @@ cmd = click.CommandCollection(sources=[report_cmd,
                                          cryptodash_get,
                                          coinglass_,
                                          fetch_trades,
-                                         bean_transaction,
-                                         bean_import_exchange])
+                                         bean_transaction])
 if __name__ == '__main__':
         # print("Hello, [bold magenta]World[/bold magenta]!", ":vampire:", locals())
         # inspect("as", methods=True)
