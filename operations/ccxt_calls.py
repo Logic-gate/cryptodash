@@ -155,7 +155,7 @@ def fetch(exchange, spot, option, plot, seconds, pretty, bean, notify, match):
                             if option == 'price':
                                 beancount.update_price(date, spot, str(result['info'][option]))
                             else:
-                                raise_error(option, 'fetch', 'option', 'price. Only accepts price as option')
+                                raise raise_error("price", "only accepts price as argument")
                         if pretty:
                         # click.echo(click.style(f"{option}: {result['info'][option]}", bold=True))
                             table = Table(title=spot+' '+option)
@@ -178,9 +178,12 @@ def fetch(exchange, spot, option, plot, seconds, pretty, bean, notify, match):
                                 result_view = f'''{date} {time} | {result_}'''
                                 console.print(result_view)
                             except:
-                                result_ = str(result[option])
-                                result_view = f'''{date} {time} | {result_}'''
-                                console.print(result_view)
+                                try:
+                                    result_ = str(result[option])
+                                    result_view = f'''{date} {time} | {result_}'''
+                                    console.print(result_view)
+                                except KeyError:
+                                    raise raise_error("option", "argument value not found")
                         # console.print(result['info'][option])
                         if plot:
                                 '''
@@ -326,7 +329,7 @@ def fetch_balance(exchange):
         print(f"TOTAL: ${round(total, 3)}")
 
 
-def fetch_trade(exchange, spot, option, since, limit, plot, interactive, bean):
+def fetch_trade(exchange, spot, option, since, limit, plot, interactive, bean, search):
 
         apiKey = getAPI(exchange)['apiKey']
         secret = getAPI(exchange)['secret']
@@ -467,25 +470,49 @@ def fetch_trade(exchange, spot, option, since, limit, plot, interactive, bean):
                 table.add_column("status", justify="center",
                                                  style=COLORS['white'], no_wrap=True)
 
-                for i in result:
-                        table.add_row(str(i['id']),
-                                                    str(i['timestamp']),
-                                                    str(i['datetime']),
-                                                    str(i['symbol']),
-                                                    str(i['type']),
-                                                    str(i['postOnly']),
-                                                    str(i['side']),
-                                                    str(i['price']),
-                                                    str(i['stopPrice']),
-                                                    str(i['amount']),
-                                                    str(i['cost']),
-                                                    str(i['filled']),
-                                                    str(i['remaining']),
-                                                    str(i['status']))
-                console.print(table)
+                if search is None:
+                    for i in result:
+                            table.add_row(str(i['id']),
+                                                        str(i['timestamp']),
+                                                        str(i['datetime']),
+                                                        str(i['symbol']),
+                                                        str(i['type']),
+                                                        str(i['postOnly']),
+                                                        str(i['side']),
+                                                        str(i['price']),
+                                                        str(i['stopPrice']),
+                                                        str(i['amount']),
+                                                        str(i['cost']),
+                                                        str(i['filled']),
+                                                        str(i['remaining']),
+                                                        str(i['status']))
+                    console.print(table)
 
+                if search is not None:
+                    try:
+                        re = search.split("::")
+                        key = re[0]
+                        value = re[1]
+                        for i in result:
+                            if i[key] == value:
+                                table.add_row(str(i['id']),
+                                                            str(i['timestamp']),
+                                                            str(i['datetime']),
+                                                            str(i['symbol']),
+                                                            str(i['type']),
+                                                            str(i['postOnly']),
+                                                            str(i['side']),
+                                                            str(i['price']),
+                                                            str(i['stopPrice']),
+                                                            str(i['amount']),
+                                                            str(i['cost']),
+                                                            str(i['filled']),
+                                                            str(i['remaining']),
+                                                            str(i['status']))
+                        console.print(table)
+                    except Exception:
+                        print(f'{search} is wrong')
                 if bean:
-
                     for ii in result:
                         if ii['status'] == 'closed':
                             if ii['side'] == 'buy':
@@ -514,7 +541,7 @@ def fetch_trade(exchange, spot, option, since, limit, plot, interactive, bean):
                                 sell = True
                                 date = parse_date_time(ii['datetime'])[0]
                                 comment = f'{spot} import from {exchange} type sell'
-                                print(spot, price, qty, buy, date, comment)
+                                # print(spot, price, qty, buy, date, comment)
                                 beancount.bean_count_transaction(
                                 exchange=exchange,
                                 spot=spot,

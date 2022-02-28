@@ -21,6 +21,7 @@ from datetime import date as datetime_date
 from datetime import datetime
 from helpers import getAPI
 from helpers import getFee
+from helpers import raise_error
 from millify import prettify
 from rich import inspect
 from rich import pretty
@@ -85,9 +86,16 @@ def fetch_trades():
 @click.option("-p", "--plot", is_flag=True)
 @click.option("--interactive", is_flag=True)
 @click.option("--bean", is_flag=True)
-def fetch_trade(exchange, spot, option, since, limit, plot, interactive, bean):
+@click.option("--search", default=None, help="key::SearchTerm")
+def fetch_trade(exchange, spot, option, since, limit, plot, interactive, bean, search):
+        if search is not None:
+            if "::" in search:
+                pass
+            else:
+                raise raise_error("--search", "--search must follow key::SearchTerm format with '::' between key and value.")
+                
         ccxt_calls.fetch_trade(exchange, spot, option,
-                                                     since, limit, plot, interactive, bean)
+                                                     since, limit, plot, interactive, bean, search)
 
 
 @click.group()
@@ -168,6 +176,7 @@ def db_operations():
 @click.option("--search", is_flag=True, help="Boolean")
 @click.option("-t", "--term", required=False, help="object::object")
 def show_db(exchange, search, term):
+        
         db_calls.show_db(exchange, search, term)
 
 
@@ -371,15 +380,15 @@ def run():
 
 
 cmd = click.CommandCollection(sources=[report_cmd,
-                                         prompt_cmd,
-                                         db_operations,
-                                         ccxt_data,
-                                         ccxt_order_book,
-                                         get_balance,
-                                         cryptodash_get,
-                                         coinglass_,
-                                         fetch_trades,
-                                         bean_transaction])
+                                                                             prompt_cmd,
+                                                                             db_operations,
+                                                                             ccxt_data,
+                                                                             ccxt_order_book,
+                                                                             get_balance,
+                                                                             cryptodash_get,
+                                                                             coinglass_,
+                                                                             fetch_trades,
+                                                                             bean_transaction])
 if __name__ == '__main__':
         # print("Hello, [bold magenta]World[/bold magenta]!", ":vampire:", locals())
         # inspect("as", methods=True)

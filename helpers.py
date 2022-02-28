@@ -11,6 +11,7 @@ from tinydb import TinyDB
 from tinydb import where
 from uniplot import plot as unipl
 from typing import Optional
+import click
 
 import pandas as pd
 
@@ -59,11 +60,9 @@ class Notification:
 
 
 def raise_error(
-    user_command: str, 
-    command: str, 
-    argument: str,
-    msg: str) -> str:
-        print(f'{user_command} [bold italic red]--> is wrong[/bold italic red]\n[bold italic red]{command}[/bold italic red] [bold italic green]{argument}[/bold italic green] needs {msg}')
+    option: str,
+    msg: str) -> Exception:
+        return click.BadOptionUsage(option, msg)
 
 
 def db_search(table=None, option='all'):
