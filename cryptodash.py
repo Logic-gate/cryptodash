@@ -16,6 +16,7 @@ from operations import coinglass_calls
 from operations import db_calls
 from config import ACCOUNTS
 from config import DB
+from config import BEANCOUNT_FILE
 from exchanges._ccxt import ccxt_operations
 from datetime import date as datetime_date
 from datetime import datetime
@@ -223,10 +224,9 @@ def prompt_cmd():
 @click.option("-d", "--date", help="Float, cp for current price")
 @click.option("--save", is_flag=True, help="Save entry to log")
 @click.option("--real", is_flag=True, help="Is this a real operation?")
-@click.option("--comment", prompt="comment", help="A comment")
-@click.option("--test", is_flag=True, default=False, help="A comment")
-@click.option("--bean", is_flag=True, help="A comment")
-def prompt(exchange, spot, qty, buy, sell, save, comment, real, test, bean, date):
+@click.option("--comment", help="A comment", default=None)
+@click.option("--bean", is_flag=True, help="Save to beancount")
+def prompt(exchange, spot, qty, buy, sell, save, comment, real, bean, date):
         if sell == 'cp':
                 apiKey = getAPI(exchange)['apiKey']
                 secret = getAPI(exchange)['secret']
@@ -234,16 +234,29 @@ def prompt(exchange, spot, qty, buy, sell, save, comment, real, test, bean, date
                 result = ccxt_api.fetch(spot)
                 current_price = result['info']['price']
                 sell = current_price
-        if test:
-                pass
-                # if strategy != None:
-                #     s = strategy
-                #     a = getSTRATEGY(s)
-                #     print(a)
-                #     exec(a['action'].replace('VAR', qty))
-
         calc(exchange, spot, float(qty), float(
                 buy), float(sell), save, comment, real, bean, date)
+
+
+@click.group()
+def bean_report():
+        pass
+
+@prompt_cmd.command()
+@click.option("-o", "--option", help="Will run bean-report {BEANCOUNT_FILE} option and output a pdf file with the same name")
+def bean_report_pdf(option):
+    command = f'bean-report {BEANCOUNT_FILE} {option} > {option} && ./2pdf.sh {option}'
+    beancount_report = ['balances','bal','trial','balsheet','journal','register','account','holdings'
+                        ,'cash','networth','equity','export_holdings','commodities','lifetimes','prices'
+                        ,'all_prices','pricedb','pricesdb','prices_db','tickers','symbols'
+                        ,'accounts','current_events','latest_events','events','activity','updated'
+                        ,'stats-types','stats-directives','stats-entries','stats-postings','ledger','hledger']
+
+    if option in beancount_report:
+        os.system(command)
+        print(f'{option} output saved to {option}.pdf')
+    else:
+        raise raise_error("option", "not a valid option")
 
 
 def getHash(data, type):
@@ -388,7 +401,7 @@ cmd = click.CommandCollection(sources=[report_cmd,
                                                                              cryptodash_get,
                                                                              coinglass_,
                                                                              fetch_trades,
-                                                                             bean_transaction])
+                                                                             bean_transaction, bean_report])
 if __name__ == '__main__':
         # print("Hello, [bold magenta]World[/bold magenta]!", ":vampire:", locals())
         # inspect("as", methods=True)
