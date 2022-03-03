@@ -1,0 +1,70 @@
+;; -*- mode: org; mode: beancount; -*-
+;; Dates: 2020-01-01 - 2022-03-30
+;; This is based on Beancount's very own sample file.
+:: I've added what I think are the essentials when it comes to crypto trading and susequent book-keeping.
+;; If you're new to beancount, please refer to https://beancount.github.io/docs/index.html.
+
+* Options
+
+option "title" "My Ledger"
+option "operating_currency" "USD"
+
+1792-01-01 commodity USD
+  export: "CASH"
+  name: "US Dollar"
+
+2004-11-01 commodity SOL-USD
+  export: "IGNORE"
+  name: "SOLANA USD SPOT"
+
+* Equity Accounts
+2014-05-12 open Equity:ICOs	USD
+
+;; Crypto Exchanges
+;; FTXUS
+;; De
+2021-01-01 open Expenses:CRYPTO:FTXUS:Maker:Fees	USD
+2020-01-01 open Assets:CRYPTO:FTXUS:Cash	USD
+2020-01-01 open Assets:CRYPTO:FTXUS:BTC-USD	BTC
+2020-01-01 open Assets:CRYPTO:FTXUS:ETH-USD	ETH
+
+;; Cr
+2021-01-01 open Income:CRYPTO:FTXUS:PnL	USD
+2022-02-12 open Liabilities:Credit-Card:Mastercard	USD
+2022-02-12 open Liabilities:Credit-Card:VISA	USD
+
+;; Bank Accounts
+* Transactions between accounts
+2020-01-01 open Assets:US:BOA:Checking	USD
+  account: "00234-48574897"
+* Transactions between accounts
+2020-01-01 open Assets:US:BOA:Main	USD
+  account: "105"
+2020-01-01 open Assets:CRYPTO:BTC:Main	USD
+  account: "wallet"
+                     
+
+* Crypto Investments
+;; --Start Cryptodash--
+
+
+2022-02-13 * "Buying BTC"
+	Assets:CRYPTO:FTXUS:Cash		-42586.04 USD
+	Assets:CRYPTO:FTXUS:BTC-USD		1.0 BTC {42552.0 USD, 2022-02-13}
+	Expenses:CRYPTO:FTXUS:Maker:Fees		34.04 USD
+
+2022-02-13 * "selling at a loss"
+	Assets:CRYPTO:FTXUS:Cash		13489 USD
+	Assets:CRYPTO:FTXUS:BTC-USD		-0.45 BTC {}
+	Expenses:CRYPTO:FTXUS:Maker:Fees		10.8 USD
+	Income:CRYPTO:FTXUS:PnL		
+
+;; END Cryptodash
+
+
+
+* Crypto Prices
+
+2022-02-13 price BTC	42590.0 USD
+2022-02-13 price BTC	42568.0 USD
+;; END Crypto Price
